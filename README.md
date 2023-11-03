@@ -1,21 +1,20 @@
-# @rneui/template
+# WeatherWear
 
-## React Native Elements Expo Template
+CS465 User Interface Design group project by Pixel Capybaras :)
 
-### Usage
 
-#### Stable
+## Getting Started 
 
-        expo init app --template @rneui/template
+Clone the repository and install the dependencies 
 
-#### Stable Typescript
+```
+git clone https://github.com/zorazrr/weather-wear.git
+cd weather-wear
+npm install
+```
 
-        expo init app --template @rneui/template@ts
+To run the application
 
-#### Bleeding Edge (Experimental)
-
-        expo init app --template @rneui/template@edge
-
-#### Bleeding Edge Typescript (Experimental)
-
-        expo init app --template @rneui/template@edge-ts
+```
+npm run android
+```

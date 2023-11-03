@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { makeStyles, Text, Button, useThemeMode } from "@rneui/themed";
 
-export default function App() {
+export const Example = () => {
   const styles = useStyles();
   const { setMode, mode } = useThemeMode();
 

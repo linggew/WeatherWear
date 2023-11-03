@@ -1,6 +1,8 @@
 import React from "react";
 import { createTheme, ThemeProvider } from "@rneui/themed";
-import Component from "./components/MyComponent";
+import 'react-native-gesture-handler';
+import { NavigationContainer } from "@react-navigation/native";
+import { Navigator } from "./navigator";
 
 const theme = createTheme({
   lightColors: {},
@@ -10,7 +12,9 @@ const theme = createTheme({
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Component />
+      <NavigationContainer>
+        <Navigator />
+      </NavigationContainer>
     </ThemeProvider>
   );
 }
