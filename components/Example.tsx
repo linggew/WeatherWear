@@ -1,14 +1,14 @@
-import React from "react";
-import { View } from "react-native";
-import { makeStyles, Text, Button, useThemeMode } from "@rneui/themed";
+import { makeStyles, Text, Button, useThemeMode } from '@rneui/themed'
+import React from 'react'
+import { View } from 'react-native'
 
 export const Example = () => {
-  const styles = useStyles();
-  const { setMode, mode } = useThemeMode();
+  const styles = useStyles()
+  const { setMode, mode } = useThemeMode()
 
   const handleOnPress = () => {
-    setMode(mode === "dark" ? "light" : "dark");
-  };
+    setMode(mode === 'dark' ? 'light' : 'dark')
+  }
 
   return (
     <View style={styles.container}>
@@ -18,17 +18,17 @@ export const Example = () => {
       </Text>
       <Button onPress={handleOnPress}>Switch Theme</Button>
     </View>
-  );
+  )
 }
 
 const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     marginVertical: theme.spacing.lg,
   },
-}));
+}))

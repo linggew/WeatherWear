@@ -1,0 +1,6 @@
+*.js
+/.expo
+/.expo-shared
+/node_modules
+.husky
+.gitignore
