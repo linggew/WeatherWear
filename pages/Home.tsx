@@ -1,15 +1,70 @@
 import type { NavigationProp } from '@react-navigation/native'
 import { makeStyles, Text, Button, Icon, useTheme } from '@rneui/themed'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
 
 type HomeProps = {
   navigation: NavigationProp<any>
 }
 
+const locationKey = '328774' //Champaign location key
+const apiKey = 'Uak4rV2fF19KADMGhnt5QKhdXG04Rfuu' //our main api key
+// const apiKey = 'SzD9dZPdAS9ASjyuZhemkGscADKJlHhq' //a back-up if first one hits limit while testing things
+const metric = false
+
+//details=true for real-feel temp, wind, UV index, etc.
+const currCondUrl = `http://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${apiKey}&details=true&metric=${metric}`
+
+//same as above
+const next12HrsUrl = `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationKey}?apikey=${apiKey}&details=true&metric=${metric}`
+
+//details=true for text explaining index value, in case we want to display it
+const indicesUrl = `http://dataservice.accuweather.com/indices/v1/daily/1day/${locationKey}?apikey=${apiKey}&details=true`
+
 export const Home = ({ navigation }: HomeProps) => {
   const styles = useStyles()
   const { theme } = useTheme()
+
+  const [currData, setCurrData] = useState([])
+  const [currLoading, setCurrLoading] = useState(true)
+
+  const [next12Data, setNext12Data] = useState([]) //next 12 hours
+  const [next12Loading, setNext12Loading] = useState(true)
+
+  const [indicesData, setIndicesData] = useState([]) //daily indices
+  const [indicesLoading, setIndicesLoading] = useState(true)
+
+  useEffect(() => {
+    fetch(currCondUrl)
+      .then((resp) => resp.json())
+      .then((json) => {
+        setCurrData(json)
+        // console.log("current conditions:")
+        // console.log(JSON.stringify(json, null, 2))
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setCurrLoading(false))
+
+    fetch(next12HrsUrl)
+      .then((resp) => resp.json())
+      .then((json) => {
+        setNext12Data(json)
+        // console.log("next 12 hrs:")
+        // console.log(JSON.stringify(json, null, 2))
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setNext12Loading(false))
+
+    fetch(indicesUrl)
+      .then((resp) => resp.json())
+      .then((json) => {
+        setIndicesData(json)
+        // console.log("indices:")
+        // console.log(JSON.stringify(json, null, 2))
+      })
+      .catch((error) => console.error(error))
+      .finally(() => setIndicesLoading(false))
+  }, []) //empty dependencies array: should only run upon initial render
 
   return (
     <View style={styles.wrapper}>
@@ -25,12 +80,18 @@ export const Home = ({ navigation }: HomeProps) => {
           Champaign
         </Button>
         <Button type="outline" onPress={() => navigation.navigate('Future')}>
-          Next 7 Days
+          Next 5 Days
         </Button>
       </View>
       <View style={styles.centerContainer}>
         <Text h1 style={{ fontWeight: '600', marginBottom: theme.spacing.lg }}>
-          80°F
+          {currLoading || !currData[0]
+            ? 'Loading...'
+            : `${
+                currData[0]['Temperature'][metric ? 'Metric' : 'Imperial'][
+                  'Value'
+                ]
+              }${metric ? '°C' : '°F'}`}
         </Text>
         <View style={styles.visualizationContainer}>
           <Text>Visualization Placeholder</Text>
