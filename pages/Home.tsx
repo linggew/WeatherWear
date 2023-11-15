@@ -1,3 +1,4 @@
+import { API_KEY, BACKUP_API_KEY } from '@env'
 import type { NavigationProp } from '@react-navigation/native'
 import { makeStyles, Text, Button, Icon, useTheme } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
@@ -8,18 +9,17 @@ type HomeProps = {
 }
 
 const locationKey = '328774' //Champaign location key
-const apiKey = 'Uak4rV2fF19KADMGhnt5QKhdXG04Rfuu' //our main api key
-// const apiKey = 'SzD9dZPdAS9ASjyuZhemkGscADKJlHhq' //a back-up if first one hits limit while testing things
+
 const metric = false
 
 //details=true for real-feel temp, wind, UV index, etc.
-const currCondUrl = `http://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${apiKey}&details=true&metric=${metric}`
+const currCondUrl = `http://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${API_KEY}&details=true&metric=${metric}`
 
 //same as above
-const next12HrsUrl = `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationKey}?apikey=${apiKey}&details=true&metric=${metric}`
+const next12HrsUrl = `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationKey}?apikey=${API_KEY}&details=true&metric=${metric}`
 
 //details=true for text explaining index value, in case we want to display it
-const indicesUrl = `http://dataservice.accuweather.com/indices/v1/daily/1day/${locationKey}?apikey=${apiKey}&details=true`
+const indicesUrl = `http://dataservice.accuweather.com/indices/v1/daily/1day/${locationKey}?apikey=${API_KEY}&details=true`
 
 export const Home = ({ navigation }: HomeProps) => {
   const styles = useStyles()
@@ -39,8 +39,6 @@ export const Home = ({ navigation }: HomeProps) => {
       .then((resp) => resp.json())
       .then((json) => {
         setCurrData(json)
-        // console.log("current conditions:")
-        // console.log(JSON.stringify(json, null, 2))
       })
       .catch((error) => console.error(error))
       .finally(() => setCurrLoading(false))
@@ -49,8 +47,6 @@ export const Home = ({ navigation }: HomeProps) => {
       .then((resp) => resp.json())
       .then((json) => {
         setNext12Data(json)
-        // console.log("next 12 hrs:")
-        // console.log(JSON.stringify(json, null, 2))
       })
       .catch((error) => console.error(error))
       .finally(() => setNext12Loading(false))
@@ -59,8 +55,6 @@ export const Home = ({ navigation }: HomeProps) => {
       .then((resp) => resp.json())
       .then((json) => {
         setIndicesData(json)
-        // console.log("indices:")
-        // console.log(JSON.stringify(json, null, 2))
       })
       .catch((error) => console.error(error))
       .finally(() => setIndicesLoading(false))

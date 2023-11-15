@@ -1,13 +1,13 @@
+import { API_KEY, BACKUP_API_KEY } from '@env'
 import { makeStyles, Text } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
 
 const locationKey = '328774' //Champaign location key
-const apiKey = 'Uak4rV2fF19KADMGhnt5QKhdXG04Rfuu' //our main api key
-// const apiKey = 'SzD9dZPdAS9ASjyuZhemkGscADKJlHhq' //a back-up if first one hits daily limit while testing things
+
 const metric = false
 
-const next5DaysUrl = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${apiKey}&details=false&metric=${metric}`
+const next5DaysUrl = `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${API_KEY}&details=false&metric=${metric}`
 
 export const Future = () => {
   const styles = useStyles()
@@ -20,8 +20,6 @@ export const Future = () => {
       .then((resp) => resp.json())
       .then((json) => {
         setNext5Data(json)
-        // console.log("next 5 days:")
-        // console.log(JSON.stringify(json, null, 2))
       })
       .catch((error) => console.error(error))
       .finally(() => setNext5Loading(false))
