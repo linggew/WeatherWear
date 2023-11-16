@@ -2,9 +2,15 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import { CityKey } from './types'
+
 export const KEYS = {
   TEMPERATURE_UNIT: 'temperatureUnit',
-  // add other keys as needed
+  LOCATION: {
+    CITY: 'locationCity',
+    KEY: 'locationKey',
+    AREA: 'locationArea',
+  },
 }
 
 export const setTemperatureUnit = async (value: string) => {
@@ -15,16 +21,12 @@ export const setTemperatureUnit = async (value: string) => {
   }
 }
 
-export const getTemperatureUnit = async (): Promise<string | null> => {
+export const setLocation = async (value: CityKey) => {
   try {
-    const value = await AsyncStorage.getItem(KEYS.TEMPERATURE_UNIT)
-
-    // If the value is null or invalid, return 'C' as the default value
-    return value && (value === 'C' || value === 'F') ? value : 'F'
+    await AsyncStorage.setItem(KEYS.LOCATION.CITY, value.city)
+    await AsyncStorage.setItem(KEYS.LOCATION.KEY, value.key)
+    await AsyncStorage.setItem(KEYS.LOCATION.AREA, value.area)
   } catch (error) {
-    console.error('Error getting temperature unit from AsyncStorage:', error)
-    return 'C' // Return 'C' as the default value in case of an error
+    console.error('Error setting location in AsyncStorage:', error)
   }
 }
-
-// Add more functions for other AsyncStorage operations as needed

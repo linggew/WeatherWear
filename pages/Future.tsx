@@ -1,4 +1,4 @@
-import { API_KEY, BACKUP_API_KEY } from '@env'
+import { API_KEY } from '@env'
 import { makeStyles, Text } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'

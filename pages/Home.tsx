@@ -1,79 +1,46 @@
-import { API_KEY, BACKUP_API_KEY } from '@env'
 import type { NavigationProp } from '@react-navigation/native'
-import { makeStyles, Text, Button, Icon, useTheme } from '@rneui/themed'
+import { makeStyles, Text, Button, Icon, useTheme, Dialog } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
 
-import { getTemperatureUnit } from '../utils/storage'
+import useAsyncStorage from '../hooks/useAsyncStorage'
+import { getCurrentWeather } from '../utils/weather'
 
 type HomeProps = {
   navigation: NavigationProp<any>
 }
 
-const locationKey = '328774' //Champaign location key
+// const locationKey = '328774' //Champaign location key
+// const metric = false
 
-const metric = false
+// //same as above
+// const next12HrsUrl = `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationKey}?apikey=${API_KEY}&details=true&metric=${metric}`
 
-//details=true for real-feel temp, wind, UV index, etc.
-const currCondUrl = `http://dataservice.accuweather.com/currentconditions/v1/${locationKey}?apikey=${API_KEY}&details=true&metric=${metric}`
-
-//same as above
-const next12HrsUrl = `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationKey}?apikey=${API_KEY}&details=true&metric=${metric}`
-
-//details=true for text explaining index value, in case we want to display it
-const indicesUrl = `http://dataservice.accuweather.com/indices/v1/daily/1day/${locationKey}?apikey=${API_KEY}&details=true`
+// //details=true for text explaining index value, in case we want to display it
+// const indicesUrl = `http://dataservice.accuweather.com/indices/v1/daily/1day/${locationKey}?apikey=${API_KEY}&details=true`
 
 export const Home = ({ navigation }: HomeProps) => {
   const styles = useStyles()
   const { theme } = useTheme()
+  const { settings, loading } = useAsyncStorage()
 
-  const [currData, setCurrData] = useState([])
-  const [currLoading, setCurrLoading] = useState(true)
+  const [currWeather, setCurrWeather] = useState(null)
 
-  const [next12Data, setNext12Data] = useState([]) //next 12 hours
-  const [next12Loading, setNext12Loading] = useState(true)
-
-  const [indicesData, setIndicesData] = useState([]) //daily indices
-  const [indicesLoading, setIndicesLoading] = useState(true)
-
-  const [metrica, setMetrica] = useState('F')
   useEffect(() => {
-    fetch(currCondUrl)
-      .then((resp) => resp.json())
-      .then((json) => {
-        setCurrData(json)
-      })
-      .catch((error) => console.error(error))
-      .finally(() => setCurrLoading(false))
-
-    fetch(next12HrsUrl)
-      .then((resp) => resp.json())
-      .then((json) => {
-        setNext12Data(json)
-      })
-      .catch((error) => console.error(error))
-      .finally(() => setNext12Loading(false))
-
-    fetch(indicesUrl)
-      .then((resp) => resp.json())
-      .then((json) => {
-        setIndicesData(json)
-      })
-      .catch((error) => console.error(error))
-      .finally(() => setIndicesLoading(false))
-
-    // Subscribe to the focus event and fetch data again when the screen gains focus
-    const unsubscribeFocus = navigation.addListener('focus', async () => {
-      // Fetch temperature unit from AsyncStorage
-      const savedTemperatureUnit = await getTemperatureUnit()
-      setMetrica(savedTemperatureUnit || 'F')
-    })
-
-    return () => {
-      // Unsubscribe from the focus event when the component unmounts
-      unsubscribeFocus()
+    if (settings) {
+      getCurrentWeather(settings!.locationKey, settings!.temperatureUnit).then(
+        (data) => setCurrWeather(data),
+      )
     }
-  }, [navigation])
+  }, [settings])
+
+  if (loading) {
+    return (
+      <View style={styles.wrapper}>
+        <Dialog.Loading />
+      </View>
+    )
+  }
 
   return (
     <View style={styles.wrapper}>
@@ -86,7 +53,7 @@ export const Home = ({ navigation }: HomeProps) => {
           onPress={() => navigation.navigate('Location')}
         >
           {' '}
-          Champaign
+          {settings && settings.locationCity}
         </Button>
         <Button type="outline" onPress={() => navigation.navigate('Future')}>
           Next 5 Days
@@ -94,13 +61,13 @@ export const Home = ({ navigation }: HomeProps) => {
       </View>
       <View style={styles.centerContainer}>
         <Text h1 style={{ fontWeight: '600', marginBottom: theme.spacing.lg }}>
-          {currLoading || !currData[0]
+          {!currWeather || !settings
             ? 'Loading...'
             : `${
-                currData[0]['Temperature'][
-                  metrica === 'C' ? 'Metric' : 'Imperial'
+                currWeather['Temperature'][
+                  settings.temperatureUnit === 'C' ? 'Metric' : 'Imperial'
                 ]['Value']
-              }${metrica === 'C' ? '°C' : '°F'}`}
+              }${settings.temperatureUnit === 'C' ? '°C' : '°F'}`}
         </Text>
         <View style={styles.visualizationContainer}>
           <Text>Visualization Placeholder</Text>

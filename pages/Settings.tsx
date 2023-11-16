@@ -1,36 +1,31 @@
-import { useNavigation } from '@react-navigation/native'
-import { makeStyles, Text, Switch } from '@rneui/themed'
+import { NavigationProp } from '@react-navigation/native'
+import { makeStyles, Text, Switch, Dialog } from '@rneui/themed'
 import React, { useEffect, useState } from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { List } from 'react-native-paper'
 
-import { getTemperatureUnit, setTemperatureUnit } from '../utils/storage'
+import useAsyncStorage from '../hooks/useAsyncStorage'
+import { setTemperatureUnit } from '../utils/storage'
 
-interface SettingsScreenProps {}
+interface SettingsProps {
+  navigation: NavigationProp<any>
+}
 
 type TemperatureUnit = 'C' | 'F'
-export const Settings: React.FC<SettingsScreenProps> = () => {
+export const Settings: React.FC<SettingsProps> = ({
+  navigation,
+}: SettingsProps) => {
   const styles = useStyles()
-  const navigation = useNavigation()
   const [temperatureUnit, setTemperatureUnitState] =
     useState<TemperatureUnit>('C')
 
-  useEffect(() => {
-    const loadTemperatureUnit = async () => {
-      const savedTemperatureUnit = await getTemperatureUnit()
-      // Use the saved value if it exists and is a valid TemperatureUnit, otherwise use the default 'C'
-      if (
-        savedTemperatureUnit &&
-        (savedTemperatureUnit === 'C' || savedTemperatureUnit === 'F')
-      ) {
-        setTemperatureUnitState(savedTemperatureUnit)
-      } else {
-        setTemperatureUnitState('C') // Default to 'C' if the retrieved value is invalid or null
-      }
-    }
+  const { settings, loading } = useAsyncStorage()
 
-    loadTemperatureUnit()
-  }, [])
+  useEffect(() => {
+    if (settings) {
+      setTemperatureUnitState(settings.temperatureUnit as TemperatureUnit)
+    }
+  }, [settings])
 
   //switch bar to switch C and F
   const handleTemperatureUnitChange = () => {
@@ -39,17 +34,26 @@ export const Settings: React.FC<SettingsScreenProps> = () => {
     setTemperatureUnit(newUnit)
   }
   const handleHealthPress = () => {
-    navigation.navigate('Health' as never)
+    navigation.navigate('Health')
   }
   const handleClothPreferencePress = () => {
-    navigation.navigate('ClothPreference' as never)
+    navigation.navigate('ClothPreference')
   }
   const handleHelpPress = () => {
-    navigation.navigate('Help' as never)
+    navigation.navigate('Help')
   }
   const handleAboutPress = () => {
-    navigation.navigate('About' as never)
+    navigation.navigate('About')
   }
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Dialog.Loading />
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <List.Section>
