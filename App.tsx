@@ -1,17 +1,22 @@
 import { NavigationContainer } from '@react-navigation/native'
-import { createTheme, ThemeProvider } from '@rneui/themed'
+import { createTheme, ThemeProvider, useThemeMode } from '@rneui/themed'
+
 import 'react-native-gesture-handler'
 
 import { Navigator } from './navigator'
 
 const theme = createTheme({
-  lightColors: {},
-  darkColors: {},
+  lightColors: {
+    // background: '#fff',
+  },
+  darkColors: {
+    // background: '#000',
+  },
 })
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <NavigationContainer>
         <Navigator />
       </NavigationContainer>

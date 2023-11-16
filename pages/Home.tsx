@@ -4,6 +4,8 @@ import { makeStyles, Text, Button, Icon, useTheme } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
 import { View } from 'react-native'
 
+import { getTemperatureUnit } from '../utils/storage'
+
 type HomeProps = {
   navigation: NavigationProp<any>
 }
@@ -34,6 +36,7 @@ export const Home = ({ navigation }: HomeProps) => {
   const [indicesData, setIndicesData] = useState([]) //daily indices
   const [indicesLoading, setIndicesLoading] = useState(true)
 
+  const [metrica, setMetrica] = useState('F')
   useEffect(() => {
     fetch(currCondUrl)
       .then((resp) => resp.json())
@@ -58,7 +61,19 @@ export const Home = ({ navigation }: HomeProps) => {
       })
       .catch((error) => console.error(error))
       .finally(() => setIndicesLoading(false))
-  }, []) //empty dependencies array: should only run upon initial render
+
+    // Subscribe to the focus event and fetch data again when the screen gains focus
+    const unsubscribeFocus = navigation.addListener('focus', async () => {
+      // Fetch temperature unit from AsyncStorage
+      const savedTemperatureUnit = await getTemperatureUnit()
+      setMetrica(savedTemperatureUnit || 'F')
+    })
+
+    return () => {
+      // Unsubscribe from the focus event when the component unmounts
+      unsubscribeFocus()
+    }
+  }, [navigation])
 
   return (
     <View style={styles.wrapper}>
@@ -82,10 +97,10 @@ export const Home = ({ navigation }: HomeProps) => {
           {currLoading || !currData[0]
             ? 'Loading...'
             : `${
-                currData[0]['Temperature'][metric ? 'Metric' : 'Imperial'][
-                  'Value'
-                ]
-              }${metric ? '°C' : '°F'}`}
+                currData[0]['Temperature'][
+                  metrica === 'C' ? 'Metric' : 'Imperial'
+                ]['Value']
+              }${metrica === 'C' ? '°C' : '°F'}`}
         </Text>
         <View style={styles.visualizationContainer}>
           <Text>Visualization Placeholder</Text>
