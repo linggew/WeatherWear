@@ -6,6 +6,7 @@ import {
   Future,
   Location,
   Health,
+  HealthAlerts,
   ClothPreference,
   Help,
   About,
@@ -21,6 +22,7 @@ export const Navigator = () => {
       <Stack.Screen name="Future" component={Future} />
       <Stack.Screen name="Location" component={Location} />
       <Stack.Screen name="Health" component={Health} />
+      <Stack.Screen name="HealthAlerts" component={HealthAlerts} />
       <Stack.Screen name="ClothPreference" component={ClothPreference} />
       <Stack.Screen name="Help" component={Help} />
       <Stack.Screen name="About" component={About} />

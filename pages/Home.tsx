@@ -5,21 +5,16 @@ import { FlatList, View } from 'react-native'
 
 import { ClothingRec } from '../components/ClothingRec'
 import useAsyncStorage from '../hooks/useAsyncStorage'
-import { getCurrentWeather, getNext12HrsWeather } from '../utils/weather'
+import {
+  getCurrentWeather,
+  getNext12HrsWeather,
+  healthAlertsExist,
+} from '../utils/weather'
 import moment from 'moment'
 
 type HomeProps = {
   navigation: NavigationProp<any>
 }
-
-// const locationKey = '328774' //Champaign location key
-// const metric = false
-
-// //same as above
-// const next12HrsUrl = `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${locationKey}?apikey=${API_KEY}&details=true&metric=${metric}`
-
-// //details=true for text explaining index value, in case we want to display it
-// const indicesUrl = `http://dataservice.accuweather.com/indices/v1/daily/1day/${locationKey}?apikey=${API_KEY}&details=true`
 
 export const Home = ({ navigation }: HomeProps) => {
   const styles = useStyles()
@@ -27,6 +22,8 @@ export const Home = ({ navigation }: HomeProps) => {
   const { settings, loading } = useAsyncStorage()
 
   const [currWeather, setCurrWeather] = useState(null)
+  const [nextWeather, setNextWeather] = useState([])
+  const [alertsExist, setAlertsExist] = useState(false)
   const [metrica, setMetrica] = useState('F')
 
   const getWeatherNum = () => {
@@ -36,7 +33,6 @@ export const Home = ({ navigation }: HomeProps) => {
       ]['Value']
     }
   }
-  const [nextWeather, setNextWeather] = useState([])
 
   useEffect(() => {
     if (settings) {
@@ -47,6 +43,13 @@ export const Home = ({ navigation }: HomeProps) => {
         settings!.locationKey,
         settings!.temperatureUnit,
       ).then((data) => setNextWeather(data))
+
+      healthAlertsExist(
+        settings!.locationKey,
+        settings!.asthma,
+        settings!.fever,
+        settings!.allergy,
+      ).then((val) => setAlertsExist(val))
     }
   }, [settings])
 
@@ -140,6 +143,20 @@ export const Home = ({ navigation }: HomeProps) => {
             />
           }
         />
+        {alertsExist && (
+          <Button
+            type="clear"
+            icon={
+              <Icon
+                name="exclamation-circle"
+                type="font-awesome"
+                size={32}
+                color={theme.colors.primary}
+                onPress={() => navigation.navigate('HealthAlerts')}
+              />
+            }
+          />
+        )}
       </View>
     </View>
   )
@@ -170,7 +187,7 @@ const useStyles = makeStyles((theme) => ({
   },
   bottomContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     width: '100%',
     padding: theme.spacing.lg,
   },
