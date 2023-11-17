@@ -35,4 +35,15 @@ const getCurrentWeather = async (key: string, metric: string) => {
   return results[0]
 }
 
-export { autoCompleteSearch, getCurrentWeather }
+const getNext5DaysWeather = async (key: string, metric: string) => {
+  const data = await fetch(
+    `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${key}?apikey=${API_KEY}&details=false&metric=${metric}`,
+  )
+  const results = await data.json()
+  if (!results) {
+    return null
+  }
+  return results
+}
+
+export { autoCompleteSearch, getCurrentWeather, getNext5DaysWeather }
