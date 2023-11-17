@@ -26,7 +26,8 @@ const autoCompleteSearch = async (
   callback(cities)
 }
 
-const getCurrentWeather = async (key: string, metric: string) => {
+const getCurrentWeather = async (key: string, tempUnit: string) => {
+  const metric = tempUnit === 'C'
   const data = await fetch(
     `http://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${CURR_KEY}&details=true&metric=${metric}`,
   )
@@ -37,7 +38,8 @@ const getCurrentWeather = async (key: string, metric: string) => {
   return results[0]
 }
 
-const getNext5DaysWeather = async (key: string, metric: string) => {
+const getNext5DaysWeather = async (key: string, tempUnit: string) => {
+  const metric = tempUnit === 'C'
   const data = await fetch(
     `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${key}?apikey=${CURR_KEY}&details=false&metric=${metric}`,
   )
@@ -48,7 +50,8 @@ const getNext5DaysWeather = async (key: string, metric: string) => {
   return results
 }
 
-const getNext12HrsWeather = async (key: string, metric: string) => {
+const getNext12HrsWeather = async (key: string, tempUnit: string) => {
+  const metric = tempUnit === 'C'
   const data = await fetch(
     `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${key}?apikey=${CURR_KEY}&details=true&metric=${metric}`,
   )
