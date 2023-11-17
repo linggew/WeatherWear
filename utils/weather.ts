@@ -54,7 +54,6 @@ const getNext12HrsWeather = async (key: string, metric: string) => {
   if (!results) {
     return null
   }
-  console.log(results)
   return results
 }
 

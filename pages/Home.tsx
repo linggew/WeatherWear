@@ -3,6 +3,7 @@ import { makeStyles, Text, Button, Icon, useTheme, Dialog } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
 import { FlatList, View } from 'react-native'
 
+import { ClothingRec } from '../components/ClothingRec'
 import useAsyncStorage from '../hooks/useAsyncStorage'
 import { getCurrentWeather, getNext12HrsWeather } from '../utils/weather'
 import moment from 'moment'
@@ -26,6 +27,15 @@ export const Home = ({ navigation }: HomeProps) => {
   const { settings, loading } = useAsyncStorage()
 
   const [currWeather, setCurrWeather] = useState(null)
+  const [metrica, setMetrica] = useState('F')
+
+  const getWeatherNum = () => {
+    if (currWeather) {
+      return currWeather['Temperature'][
+        settings!.temperatureUnit === 'C' ? 'Metric' : 'Imperial'
+      ]['Value']
+    }
+  }
   const [nextWeather, setNextWeather] = useState([])
 
   useEffect(() => {
@@ -84,14 +94,18 @@ export const Home = ({ navigation }: HomeProps) => {
         </Button>
       </View>
       <View style={styles.centerContainer}>
-        <Text h1 style={{ fontWeight: '600', marginBottom: theme.spacing.lg }}>
+        <Text
+          style={{
+            fontWeight: '600',
+            marginBottom: theme.spacing.lg,
+            fontSize: '50dpi',
+          }}
+        >
           {!currWeather || !settings
             ? 'Loading...'
-            : `${
-                currWeather['Temperature'][
-                  settings.temperatureUnit === 'C' ? 'Metric' : 'Imperial'
-                ]['Value']
-              }${settings.temperatureUnit === 'C' ? '°C' : '°F'}`}
+            : `${getWeatherNum()}${
+                settings.temperatureUnit === 'C' ? '°C' : '°F'
+              }`}
         </Text>
         <View style={styles.visualizationContainer}>
           <FlatList
@@ -105,7 +119,12 @@ export const Home = ({ navigation }: HomeProps) => {
           />
         </View>
         <View style={styles.avatarContainer}>
-          <Text>Avatar Placeholder</Text>
+          {currWeather && (
+            <ClothingRec
+              currTemp={getWeatherNum()!}
+              metric={settings!.temperature === 'C'}
+            />
+          )}
         </View>
       </View>
       <View style={styles.bottomContainer}>

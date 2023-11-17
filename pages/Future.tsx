@@ -8,6 +8,7 @@ import Carousel from 'react-native-reanimated-carousel'
 
 import useAsyncStorage from '../hooks/useAsyncStorage'
 import { getNext5DaysWeather } from '../utils/weather'
+import { ClothingRec } from '../components/ClothingRec'
 
 export const Future = () => {
   const styles = useStyles()
@@ -80,7 +81,18 @@ export const Future = () => {
                 {`${next5Data['DailyForecasts'][index]['Day']['IconPhrase']}`}
               </Text>
               <View style={styles.avatarContainer}>
-                <Text>Avatar Placeholder</Text>
+                <ClothingRec
+                  currTemp={
+                    (next5Data['DailyForecasts'][index]['Temperature'][
+                      'Maximum'
+                    ]['Value'] +
+                      next5Data['DailyForecasts'][index]['Temperature'][
+                        'Minimum'
+                      ]['Value']) /
+                    2
+                  }
+                  metric={settings!.temperatureUnit === 'C'}
+                />
               </View>
             </View>
           </View>
@@ -130,7 +142,7 @@ const useStyles = makeStyles((theme) => ({
   avatarContainer: {
     borderRadius: 20,
     textAlign: 'center',
-    marginVertical: theme.spacing.lg,
+    marginTop: theme.spacing.lg,
     padding: theme.spacing.xl,
     width: '80%',
     flex: 0.8,

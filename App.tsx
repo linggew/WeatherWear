@@ -6,8 +6,12 @@ import 'react-native-gesture-handler'
 import { Navigator } from './navigator'
 
 const theme = createTheme({
-  lightColors: {},
-  darkColors: {},
+  lightColors: {
+    // background: '#fff',
+  },
+  darkColors: {
+    // background: '#000',
+  },
 })
 
 export default function App() {
