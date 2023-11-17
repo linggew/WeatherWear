@@ -1,10 +1,11 @@
 import type { NavigationProp } from '@react-navigation/native'
 import { makeStyles, Text, Button, Icon, useTheme, Dialog } from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
-import { View } from 'react-native'
+import { FlatList, View } from 'react-native'
 
 import useAsyncStorage from '../hooks/useAsyncStorage'
-import { getCurrentWeather } from '../utils/weather'
+import { getCurrentWeather, getNext12HrsWeather } from '../utils/weather'
+import moment from 'moment'
 
 type HomeProps = {
   navigation: NavigationProp<any>
@@ -25,12 +26,17 @@ export const Home = ({ navigation }: HomeProps) => {
   const { settings, loading } = useAsyncStorage()
 
   const [currWeather, setCurrWeather] = useState(null)
+  const [nextWeather, setNextWeather] = useState([])
 
   useEffect(() => {
     if (settings) {
       getCurrentWeather(settings!.locationKey, settings!.temperatureUnit).then(
         (data) => setCurrWeather(data),
       )
+      getNext12HrsWeather(
+        settings!.locationKey,
+        settings!.temperatureUnit,
+      ).then((data) => setNextWeather(data))
     }
   }, [settings])
 
@@ -41,6 +47,24 @@ export const Home = ({ navigation }: HomeProps) => {
       </View>
     )
   }
+
+  let data = []
+  for (let i = 0; i < nextWeather.length; i++) {
+    data.push({
+      id: i,
+      time: moment(nextWeather[i]['DateTime']).format('h A'),
+      temp: nextWeather[i]['Temperature']['Value'] + '°',
+    })
+  }
+
+  type ItemProps = { time: string; temp: string }
+
+  const Item = ({ time, temp }: ItemProps) => (
+    <View style={styles.item}>
+      <Text style={{ fontSize: 15 }}>{time}</Text>
+      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{temp}</Text>
+    </View>
+  )
 
   return (
     <View style={styles.wrapper}>
@@ -70,7 +94,15 @@ export const Home = ({ navigation }: HomeProps) => {
               }${settings.temperatureUnit === 'C' ? '°C' : '°F'}`}
         </Text>
         <View style={styles.visualizationContainer}>
-          <Text>Visualization Placeholder</Text>
+          <FlatList
+            data={data}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <Item time={item.time} temp={item.temp} />
+            )}
+            // keyExtractor={item => item.id}
+          />
         </View>
         <View style={styles.avatarContainer}>
           <Text>Avatar Placeholder</Text>
@@ -127,7 +159,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
     textAlign: 'center',
     marginVertical: theme.spacing.lg,
-    padding: theme.spacing.xl,
+    padding: theme.spacing.md,
     width: '80%',
     height: '25%',
     backgroundColor: theme.colors.grey5,
@@ -143,6 +175,14 @@ const useStyles = makeStyles((theme) => ({
     width: '80%',
     flex: 1,
     backgroundColor: theme.colors.grey5,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  item: {
+    marginVertical: 8,
+    marginHorizontal: 16,
+    flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
