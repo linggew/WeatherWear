@@ -1,12 +1,13 @@
 import 'react-native-gesture-handler'
-import moment from 'moment'
+import { useHeaderHeight } from '@react-navigation/elements'
 import { makeStyles, Text, Dialog } from '@rneui/themed'
+import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import { Dimensions, View } from 'react-native'
 import Carousel from 'react-native-reanimated-carousel'
+
 import useAsyncStorage from '../hooks/useAsyncStorage'
 import { getNext5DaysWeather } from '../utils/weather'
-import { useHeaderHeight } from '@react-navigation/elements'
 
 export const Future = () => {
   const styles = useStyles()

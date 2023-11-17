@@ -4,4 +4,11 @@ type CityKey = {
   area: string
 }
 
-export { CityKey }
+type HealthPreferences = {
+  asthma: boolean
+  fever: boolean
+  allergy: boolean
+  heatIntolerance: boolean
+}
+
+export { CityKey, HealthPreferences }

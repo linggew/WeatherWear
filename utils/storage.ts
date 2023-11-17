@@ -2,7 +2,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import { CityKey } from './types'
+import { CityKey, HealthPreferences } from './types'
 
 export const KEYS = {
   TEMPERATURE_UNIT: 'temperatureUnit',
@@ -10,6 +10,12 @@ export const KEYS = {
     CITY: 'locationCity',
     KEY: 'locationKey',
     AREA: 'locationArea',
+  },
+  HEALTH_PREFERENCE: {
+    ASTHMA: 'asthma',
+    FEVER: 'fever',
+    ALLERGY: 'allergy',
+    HEAT_INTOLERANCE: 'heatIntolerance',
   },
 }
 
@@ -28,5 +34,28 @@ export const setLocation = async (value: CityKey) => {
     await AsyncStorage.setItem(KEYS.LOCATION.AREA, value.area)
   } catch (error) {
     console.error('Error setting location in AsyncStorage:', error)
+  }
+}
+
+export const setHealthPreferences = async (value: HealthPreferences) => {
+  try {
+    await AsyncStorage.setItem(
+      KEYS.HEALTH_PREFERENCE.ASTHMA,
+      value.asthma.toString(),
+    )
+    await AsyncStorage.setItem(
+      KEYS.HEALTH_PREFERENCE.FEVER,
+      value.fever.toString(),
+    )
+    await AsyncStorage.setItem(
+      KEYS.HEALTH_PREFERENCE.ALLERGY,
+      value.allergy.toString(),
+    )
+    await AsyncStorage.setItem(
+      KEYS.HEALTH_PREFERENCE.HEAT_INTOLERANCE,
+      value.heatIntolerance.toString(),
+    )
+  } catch (error) {
+    console.error('Error setting health preferences in AsyncStorage:', error)
   }
 }
