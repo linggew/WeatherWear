@@ -15,5 +15,11 @@ npm install
 To run the application (if this is your first time running the app, you will need to [set up an emulator](https://docs.expo.dev/workflow/android-studio-emulator/)):
 
 ```
-npm run android
+npm run start
+```
+
+To create build for android:
+
+```
+eas build --profile preview --platform android
 ```

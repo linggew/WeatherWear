@@ -17,7 +17,7 @@ const useAsyncStorage = () => {
       result.forEach(([key, value]) => {
         dataObject[key] = value!
       })
-
+      console.log(dataObject)
       setData(dataObject)
       setLoading(false)
     } catch (error) {

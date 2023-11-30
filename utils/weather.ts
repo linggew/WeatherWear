@@ -2,14 +2,12 @@ import { API_KEY, BACKUP_API_KEY } from '@env'
 
 import { CityKey } from './types'
 
-const CURR_KEY = API_KEY
-
 const autoCompleteSearch = async (
   query: string,
   callback: (results: CityKey[]) => void,
 ) => {
   const data = await fetch(
-    `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${CURR_KEY}&q=${query}`,
+    `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${API_KEY}&q=${query}`,
   )
   const results = await data.json()
   if (!results) {
@@ -29,9 +27,10 @@ const autoCompleteSearch = async (
 const getCurrentWeather = async (key: string, tempUnit: string) => {
   const metric = tempUnit === 'C'
   const data = await fetch(
-    `http://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${CURR_KEY}&details=true&metric=${metric}`,
+    `http://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${API_KEY}&details=true&metric=${metric}`,
   )
   const results = await data.json()
+  console.log(results)
   if (!results) {
     return null
   }
@@ -41,7 +40,7 @@ const getCurrentWeather = async (key: string, tempUnit: string) => {
 const getNext5DaysWeather = async (key: string, tempUnit: string) => {
   const metric = tempUnit === 'C'
   const data = await fetch(
-    `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${key}?apikey=${CURR_KEY}&details=false&metric=${metric}`,
+    `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${key}?apikey=${API_KEY}&details=false&metric=${metric}`,
   )
   const results = await data.json()
   if (!results) {
@@ -53,7 +52,7 @@ const getNext5DaysWeather = async (key: string, tempUnit: string) => {
 const getNext12HrsWeather = async (key: string, tempUnit: string) => {
   const metric = tempUnit === 'C'
   const data = await fetch(
-    `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${key}?apikey=${CURR_KEY}&details=true&metric=${metric}`,
+    `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${key}?apikey=${API_KEY}&details=true&metric=${metric}`,
   )
   const results = await data.json()
   if (!results) {
@@ -69,7 +68,7 @@ const getHealthAlerts = async (
   allergy: string,
 ) => {
   const data = await fetch(
-    `http://dataservice.accuweather.com/indices/v1/daily/1day/${key}?apikey=${CURR_KEY}&details=true`,
+    `http://dataservice.accuweather.com/indices/v1/daily/1day/${key}?apikey=${API_KEY}&details=true`,
   )
   const results = await data.json()
   if (!results) {
@@ -115,7 +114,7 @@ const healthAlertsExist = async (
   allergy: string,
 ) => {
   const data = await fetch(
-    `http://dataservice.accuweather.com/indices/v1/daily/1day/${key}?apikey=${CURR_KEY}&details=true`,
+    `http://dataservice.accuweather.com/indices/v1/daily/1day/${key}?apikey=${API_KEY}&details=true`,
   )
   const results = await data.json()
   if (!results) {
