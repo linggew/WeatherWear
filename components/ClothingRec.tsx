@@ -120,7 +120,7 @@ export const ClothingRec = ({
           name="umbrella"
           type="feather"
           size={32}
-          color={'#3F3F70'}
+          color="#3F3F70"
           style={{ alignSelf: 'flex-end' }}
         />
       )}

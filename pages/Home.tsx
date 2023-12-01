@@ -23,7 +23,6 @@ import {
   healthAlertsExist,
 } from '../utils/weather'
 import { weather_icons } from '../utils/weather-icons'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type HomeProps = {
   navigation: NavigationProp<any>
@@ -236,7 +235,7 @@ export const Home = ({ navigation }: HomeProps) => {
                 type="feather"
                 size={30}
                 color={theme.colors.primary}
-                onPress={() => navigation.navigate('Settings')}
+                onPress={() => navigation.navigate('Feedback')}
               />
             }
           />
