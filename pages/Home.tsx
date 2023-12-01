@@ -158,6 +158,13 @@ export const Home = ({ navigation }: HomeProps) => {
                 <Text>{nextWeather[0].time}</Text>
                 <Text>{nextWeather[11].time}</Text>
               </View>
+              <View style={styles.sliderCenterTextContainer}>
+                <Text
+                  style={{ fontWeight: 'bold', color: theme.colors.primary }}
+                >
+                  {currWeather.time}
+                </Text>
+              </View>
               <Slider
                 value={currTime}
                 onValueChange={setCurrTime}
@@ -292,7 +299,7 @@ const useStyles = makeStyles((theme) => ({
   avatarContainer: {
     borderRadius: 20,
     textAlign: 'center',
-    marginVertical: theme.spacing.lg,
+    marginVertical: theme.spacing.sm,
     padding: theme.spacing.md,
     width: '80%',
     flex: 1,
@@ -308,6 +315,10 @@ const useStyles = makeStyles((theme) => ({
   sliderWithTextContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  sliderCenterTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   item: {
     marginVertical: 8,
