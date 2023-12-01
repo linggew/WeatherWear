@@ -151,7 +151,7 @@ export const Home = ({ navigation }: HomeProps) => {
                 name="exclamation-circle"
                 type="font-awesome"
                 size={32}
-                color={theme.colors.primary}
+                color={theme.colors.error}
                 onPress={() => navigation.navigate('HealthAlerts')}
               />
             }
