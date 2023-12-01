@@ -139,7 +139,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
-    paddingRight: 16,
+    paddingRight: 10,
     marginBottom: 10,
   },
   title: {

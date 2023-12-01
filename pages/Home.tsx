@@ -8,10 +8,11 @@ import {
   Dialog,
   Slider,
   FAB,
+  Card,
 } from '@rneui/themed'
 import moment from 'moment'
 import React, { useState, useEffect } from 'react'
-import { FlatList, View } from 'react-native'
+import { View, Image } from 'react-native'
 
 import { ClothingRec } from '../components/ClothingRec'
 import TempChart from '../components/TempChart'
@@ -21,6 +22,8 @@ import {
   getNext12HrsWeather,
   healthAlertsExist,
 } from '../utils/weather'
+import { weather_icons } from '../utils/weather-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type HomeProps = {
   navigation: NavigationProp<any>
@@ -32,6 +35,7 @@ export type WeatherType = {
   id: number
   time: any
   temp: number
+  icon: number
 }
 
 export const Home = ({ navigation }: HomeProps) => {
@@ -39,9 +43,10 @@ export const Home = ({ navigation }: HomeProps) => {
   const { theme } = useTheme()
   const { settings, loading } = useAsyncStorage()
 
-  const [currWeather, setCurrWeather] = useState(0)
+  const [currWeather, setCurrWeather] = useState(Object)
   const [nextWeather, setNextWeather] = useState<WeatherType[]>([])
   const [alertsExist, setAlertsExist] = useState(false)
+  const [hasPrecipitation, setHasPrecipitation] = useState(false)
   const [currTime, setCurrTime] = useState(0)
 
   // const getWeatherNum = () => {
@@ -67,9 +72,13 @@ export const Home = ({ navigation }: HomeProps) => {
             id: i,
             time: moment(data[i]['DateTime']).format('h A'),
             temp: Number(data[i]['Temperature']['Value']),
+            icon: Number(data[i]['WeatherIcon']),
           })
+          if (data[i]['HasPrecipitation']) {
+            setHasPrecipitation(true)
+          }
         }
-        setCurrWeather(nextWeatherData[0].temp)
+        setCurrWeather(nextWeatherData[0])
         setNextWeather(nextWeatherData)
       })
 
@@ -84,7 +93,7 @@ export const Home = ({ navigation }: HomeProps) => {
 
   useEffect(() => {
     if (nextWeather.length > 0) {
-      setCurrWeather(nextWeather[currTime].temp)
+      setCurrWeather(nextWeather[currTime])
     }
   }, [currTime])
 
@@ -121,27 +130,26 @@ export const Home = ({ navigation }: HomeProps) => {
         </Button>
       </View>
       <View style={styles.centerContainer}>
-        <Text
-          style={{
-            fontWeight: '600',
-            marginBottom: theme.spacing.sm,
-            fontSize: 50,
-          }}
-        >
-          {!currWeather || !settings
-            ? 'Loading...'
-            : `${currWeather}${settings.temperatureUnit === 'C' ? '°C' : '°F'}`}
-        </Text>
+        <View style={styles.currContainer}>
+          <Text
+            style={{
+              fontWeight: '600',
+              marginBottom: theme.spacing.sm,
+              fontSize: 50,
+            }}
+          >
+            {!currWeather || !settings
+              ? 'Loading...'
+              : `${currWeather.temp}${
+                  settings.temperatureUnit === 'C' ? '°C' : '°F'
+                }`}
+          </Text>
+          {currWeather && settings ? (
+            <Image source={weather_icons[currWeather.icon - 1]} />
+          ) : null}
+        </View>
+
         <View style={styles.visualizationContainer}>
-          {/* <FlatList
-            data={nextWeather}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <Item time={item.time} temp={String(item.temp)} />
-            )}
-            keyExtractor={(item) => item.id}
-          /> */}
           {nextWeather.length > 0 ? <TempChart data={nextWeather} /> : null}
         </View>
         <View style={styles.sliderContainer}>
@@ -170,23 +178,26 @@ export const Home = ({ navigation }: HomeProps) => {
             </>
           ) : null}
         </View>
-        <View style={styles.avatarContainer}>
+        <Card containerStyle={styles.avatarContainer}>
           {currWeather && settings ? (
             <ClothingRec
-              currTemp={currWeather}
+              currTemp={currWeather.temp}
               metric={settings!.temperature === 'C'}
+              hasPrecipitation={hasPrecipitation}
             />
           ) : null}
-          {currWeather && settings ? (
+        </Card>
+        {/* {currWeather && settings ? (
             <FAB
               size="small"
               icon={{ name: 'message', color: 'white' }}
               color={theme.colors.primary}
               placement="right"
               onPress={() => navigation.navigate('Feedback')}
+              style={{ right: 0, bottom: 0, position: 'absolute' }}
             />
-          ) : null}
-        </View>
+          ) : // <Icon name="message-circle" type="feather" color={theme.colors.primary} />
+            null} */}
       </View>
       <View style={styles.bottomContainer}>
         <Button
@@ -195,7 +206,7 @@ export const Home = ({ navigation }: HomeProps) => {
             <Icon
               name="settings"
               type="feather"
-              size={32}
+              size={30}
               color={theme.colors.primary}
               onPress={() => navigation.navigate('Settings')}
             />
@@ -208,13 +219,28 @@ export const Home = ({ navigation }: HomeProps) => {
               <Icon
                 name="exclamation-circle"
                 type="font-awesome"
-                size={32}
+                size={30}
                 color={theme.colors.error}
                 onPress={() => navigation.navigate('HealthAlerts')}
               />
             }
           />
         ) : null}
+        {currWeather && settings && (
+          <Button
+            type="clear"
+            style={{ alignSelf: 'flex-end' }}
+            icon={
+              <Icon
+                name="message-square"
+                type="feather"
+                size={30}
+                color={theme.colors.primary}
+                onPress={() => navigation.navigate('Settings')}
+              />
+            }
+          />
+        )}
       </View>
     </View>
   )
@@ -241,7 +267,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     width: '100%',
     flex: 1,
-    marginTop: theme.spacing.xl,
+    marginTop: theme.spacing.lg,
+  },
+  currContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   bottomContainer: {
     flexDirection: 'row',
@@ -252,11 +284,8 @@ const useStyles = makeStyles((theme) => ({
   visualizationContainer: {
     borderRadius: 20,
     textAlign: 'center',
-    marginVertical: theme.spacing.lg,
-    // padding: theme.spacing.md,
+    marginVertical: theme.spacing.md,
     width: '100%',
-    height: '20%',
-    // backgroundColor: theme.colors.white,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -268,14 +297,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing.md,
     width: '80%',
     flex: 1,
-    // backgroundColor: theme.colors.grey5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
   },
   sliderContainer: {
-    width: '70%',
+    width: '80%',
     marginHorizontal: theme.spacing.xl,
+    marginBottom: theme.spacing.xl,
   },
   sliderWithTextContainer: {
     flexDirection: 'row',

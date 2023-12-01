@@ -30,7 +30,7 @@ const TempChart = ({ data }: TempChartProps) => {
       <LineChart
         data={mapDataForChart(data)}
         width={screenWidth * 0.9}
-        height={100}
+        height={85}
         yAxisSuffix="°"
         chartConfig={{
           backgroundColor: 'transparent',

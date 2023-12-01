@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native'
-import { Dialog } from '@rneui/themed'
+import { Dialog, useTheme, Icon } from '@rneui/themed'
 import { useEffect, useState, useCallback } from 'react'
 import { ImageURISource, View, Text } from 'react-native'
 import SvgUri from 'react-native-svg-uri'
@@ -9,6 +9,7 @@ import { getClothPreferenceData } from '../utils/storage'
 type ClothingRecProps = {
   currTemp: number
   metric: boolean
+  hasPrecipitation: boolean
 }
 
 const coat = require('../assets/clothing/coat.svg')
@@ -20,9 +21,14 @@ const shorts = require('../assets/clothing/shorts.svg')
 const sleeveless = require('../assets/clothing/sleeveless.svg')
 const warmPants = require('../assets/clothing/warm-pants.svg')
 
-export const ClothingRec = ({ currTemp, metric }: ClothingRecProps) => {
+export const ClothingRec = ({
+  currTemp,
+  metric,
+  hasPrecipitation,
+}: ClothingRecProps) => {
   const [preference, setPreference] = useState(null)
   const [rec, setRec] = useState<ImageURISource[]>([])
+  const { theme } = useTheme()
 
   const recommendClothing = () => {
     if (preference) {
@@ -109,6 +115,15 @@ export const ClothingRec = ({ currTemp, metric }: ClothingRecProps) => {
 
   return (
     <View>
+      {hasPrecipitation && (
+        <Icon
+          name="umbrella"
+          type="feather"
+          size={32}
+          color={'#3F3F70'}
+          style={{ alignSelf: 'flex-end' }}
+        />
+      )}
       {rec.map((item, index) => (
         <SvgUri key={index} width={130} height={130} source={item} />
       ))}

@@ -1,14 +1,15 @@
 import 'react-native-gesture-handler'
 import { useHeaderHeight } from '@react-navigation/elements'
-import { makeStyles, Text, Dialog } from '@rneui/themed'
+import { makeStyles, Text, Dialog, Card } from '@rneui/themed'
 import moment from 'moment'
 import React, { useState, useEffect } from 'react'
-import { Dimensions, View } from 'react-native'
+import { Dimensions, View, Image } from 'react-native'
 import Carousel from 'react-native-reanimated-carousel'
 
 import useAsyncStorage from '../hooks/useAsyncStorage'
 import { getNext5DaysWeather } from '../utils/weather'
 import { ClothingRec } from '../components/ClothingRec'
+import { weather_icons } from '../utils/weather-icons'
 
 export const Future = () => {
   const styles = useStyles()
@@ -80,7 +81,22 @@ export const Future = () => {
               <Text style={{ textAlign: 'center', fontSize: 25 }}>
                 {`${next5Data['DailyForecasts'][index]['Day']['IconPhrase']}`}
               </Text>
-              <View style={styles.avatarContainer}>
+              <Image
+                source={
+                  weather_icons[
+                    next5Data['DailyForecasts'][index]['Day']['Icon'] - 1
+                  ]
+                }
+              />
+              <Card
+                containerStyle={{
+                  borderRadius: 8,
+                  width: '80%',
+                  flex: 0.8,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 <ClothingRec
                   currTemp={
                     (next5Data['DailyForecasts'][index]['Temperature'][
@@ -92,8 +108,13 @@ export const Future = () => {
                     2
                   }
                   metric={settings!.temperatureUnit === 'C'}
+                  hasPrecipitation={
+                    next5Data['DailyForecasts'][index]['Day'][
+                      'HasPrecipitation'
+                    ]
+                  }
                 />
-              </View>
+              </Card>
             </View>
           </View>
         )}
@@ -150,5 +171,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  item: {
+    aspectRatio: 1,
+    width: '100%',
+    flex: 1,
   },
 }))
