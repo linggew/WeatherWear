@@ -1,4 +1,4 @@
-// import { API_KEY, BACKUP_API_KEY } from '@env'
+import { API_KEY } from '@env'
 
 import { CityKey } from './types'
 const autoCompleteSearch = async (

@@ -61,6 +61,7 @@ export const Home = ({ navigation }: HomeProps) => {
       // getCurrentWeather(settings!.locationKey, settings!.temperatureUnit).then(
       //   (data) => setCurrWeather(data),
       // )
+      setHasPrecipitation(false)
       getNext12HrsWeather(
         settings!.locationKey,
         settings!.temperatureUnit,
@@ -156,15 +157,20 @@ export const Home = ({ navigation }: HomeProps) => {
             <>
               <View style={styles.sliderWithTextContainer}>
                 <Text>{nextWeather[0].time}</Text>
-                <Text>{nextWeather[11].time}</Text>
-              </View>
-              <View style={styles.sliderCenterTextContainer}>
                 <Text
                   style={{ fontWeight: 'bold', color: theme.colors.primary }}
                 >
                   {currWeather.time}
                 </Text>
+                <Text>{nextWeather[11].time}</Text>
               </View>
+              {/* <View style={styles.sliderCenterTextContainer}>
+                <Text
+                  style={{ fontWeight: 'bold', color: theme.colors.primary }}
+                >
+                  {currWeather.time}
+                </Text>
+              </View> */}
               <Slider
                 value={currTime}
                 onValueChange={setCurrTime}

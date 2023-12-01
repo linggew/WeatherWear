@@ -95,7 +95,7 @@ export const ClothingRec = ({
     if (preference) {
       recommendClothing()
     }
-  }, [preference, currTemp, metric])
+  }, [preference, currTemp, metric, hasPrecipitation])
 
   useFocusEffect(
     useCallback(() => {
