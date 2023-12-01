@@ -10,6 +10,7 @@ import {
   ClothPreference,
   Help,
   About,
+  Feedback,
 } from '../pages'
 
 const Stack = createStackNavigator()
@@ -19,6 +20,7 @@ export const Navigator = () => {
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="Feedback" component={Feedback} />
       <Stack.Screen name="Future" component={Future} />
       <Stack.Screen name="Location" component={Location} />
       <Stack.Screen name="Health" component={Health} />

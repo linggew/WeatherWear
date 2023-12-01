@@ -1,5 +1,13 @@
 import type { NavigationProp } from '@react-navigation/native'
-import { makeStyles, Text, Button, Icon, useTheme, Dialog } from '@rneui/themed'
+import {
+  makeStyles,
+  Text,
+  Button,
+  Icon,
+  useTheme,
+  Dialog,
+  FAB,
+} from '@rneui/themed'
 import React, { useState, useEffect } from 'react'
 import { FlatList, View } from 'react-native'
 
@@ -24,7 +32,6 @@ export const Home = ({ navigation }: HomeProps) => {
   const [currWeather, setCurrWeather] = useState(null)
   const [nextWeather, setNextWeather] = useState([])
   const [alertsExist, setAlertsExist] = useState(false)
-  const [metrica, setMetrica] = useState('F')
 
   const getWeatherNum = () => {
     if (currWeather) {
@@ -101,7 +108,7 @@ export const Home = ({ navigation }: HomeProps) => {
           style={{
             fontWeight: '600',
             marginBottom: theme.spacing.lg,
-            fontSize: '50dpi',
+            fontSize: 50,
           }}
         >
           {!currWeather || !settings
@@ -126,6 +133,15 @@ export const Home = ({ navigation }: HomeProps) => {
             <ClothingRec
               currTemp={getWeatherNum()!}
               metric={settings!.temperature === 'C'}
+            />
+          )}
+          {currWeather && settings && (
+            <FAB
+              size="small"
+              icon={{ name: 'message', color: 'white' }}
+              color={theme.colors.primary}
+              placement="right"
+              onPress={() => navigation.navigate('Feedback')}
             />
           )}
         </View>
@@ -207,7 +223,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
     textAlign: 'center',
     marginVertical: theme.spacing.lg,
-    padding: theme.spacing.xl,
+    padding: theme.spacing.md,
     width: '80%',
     flex: 1,
     backgroundColor: theme.colors.grey5,

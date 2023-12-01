@@ -61,6 +61,15 @@ const getNext12HrsWeather = async (key: string, tempUnit: string) => {
   return results
 }
 
+const isAlert = (category: string) => {
+  return (
+    category !== 'Beneficial' &&
+    category !== 'Low' &&
+    category !== 'Neutral' &&
+    category !== 'Good'
+  )
+}
+
 const getHealthAlerts = async (
   key: string,
   asthma: string,
@@ -76,28 +85,28 @@ const getHealthAlerts = async (
   }
 
   const alerts = []
-  if (asthma && results[24]['CategoryValue'] > 1) {
+  if (asthma && isAlert(results[24]['Category'])) {
     alerts.push({
       name: results[24]['Name'],
       category: results[24]['Category'],
       text: results[24]['Text'],
     })
   }
-  if (fever && results[26]['CategoryValue'] > 1) {
+  if (fever && isAlert(results[26]['Category'])) {
     alerts.push({
       name: results[26]['Name'],
       category: results[26]['Category'],
       text: results[26]['Text'],
     })
   }
-  if (fever && results[27]['CategoryValue'] > 1) {
+  if (fever && isAlert(results[27]['Category'])) {
     alerts.push({
       name: results[27]['Name'],
       category: results[27]['Category'],
       text: results[27]['Text'],
     })
   }
-  if (allergy && results[19]['CategoryValue'] > 1) {
+  if (allergy && isAlert(results[19]['Category'])) {
     alerts.push({
       name: results[19]['Name'],
       category: results[19]['Category'],
@@ -120,10 +129,10 @@ const healthAlertsExist = async (
   if (!results) {
     return false
   }
-  const asthmaAlert = results[24]['CategoryValue'] > 1 && asthma === 'true'
-  const coldAlert = results[26]['CategoryValue'] > 1 && fever === 'true'
-  const fluAlert = results[27]['CategoryValue'] > 1 && fever === 'true'
-  const allergyAlert = results[19]['CategoryValue'] > 1 && allergy === 'true'
+  const asthmaAlert = isAlert(results[24]['Category']) && asthma === 'true'
+  const coldAlert = isAlert(results[26]['Category']) && fever === 'true'
+  const fluAlert = isAlert(results[27]['Category']) && fever === 'true'
+  const allergyAlert = isAlert(results[19]['Category']) && allergy === 'true'
 
   if (asthmaAlert || coldAlert || fluAlert || allergyAlert) {
     return true
