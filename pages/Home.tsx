@@ -7,7 +7,7 @@ import {
   useTheme,
   Dialog,
   Slider,
-  FAB
+  FAB,
 } from '@rneui/themed'
 import moment from 'moment'
 import React, { useState, useEffect } from 'react'
@@ -114,7 +114,7 @@ export const Home = ({ navigation }: HomeProps) => {
           onPress={() => navigation.navigate('Location')}
         >
           {' '}
-          {settings && settings.locationCity}
+          {settings ? settings.locationCity : null}
         </Button>
         <Button type="outline" onPress={() => navigation.navigate('Future')}>
           Next 5 Days
@@ -142,10 +142,10 @@ export const Home = ({ navigation }: HomeProps) => {
             )}
             keyExtractor={(item) => item.id}
           /> */}
-          <TempChart data={nextWeather} />
+          {nextWeather.length > 0 ? <TempChart data={nextWeather} /> : null}
         </View>
         <View style={styles.sliderContainer}>
-          {nextWeather.length > 0 && (
+          {nextWeather.length > 0 ? (
             <>
               <View style={styles.sliderWithTextContainer}>
                 <Text>{nextWeather[0].time}</Text>
@@ -168,16 +168,16 @@ export const Home = ({ navigation }: HomeProps) => {
                 }}
               />
             </>
-          )}
+          ) : null}
         </View>
         <View style={styles.avatarContainer}>
-          {currWeather && settings && (
+          {currWeather && settings ? (
             <ClothingRec
               currTemp={currWeather}
               metric={settings!.temperature === 'C'}
             />
-          )}
-          {currWeather && settings && (
+          ) : null}
+          {currWeather && settings ? (
             <FAB
               size="small"
               icon={{ name: 'message', color: 'white' }}
@@ -185,7 +185,7 @@ export const Home = ({ navigation }: HomeProps) => {
               placement="right"
               onPress={() => navigation.navigate('Feedback')}
             />
-          )}
+          ) : null}
         </View>
       </View>
       <View style={styles.bottomContainer}>
@@ -201,7 +201,7 @@ export const Home = ({ navigation }: HomeProps) => {
             />
           }
         />
-        {alertsExist && (
+        {alertsExist ? (
           <Button
             type="clear"
             icon={
@@ -214,7 +214,7 @@ export const Home = ({ navigation }: HomeProps) => {
               />
             }
           />
-        )}
+        ) : null}
       </View>
     </View>
   )
