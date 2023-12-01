@@ -30,7 +30,6 @@ const getCurrentWeather = async (key: string, tempUnit: string) => {
     `http://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${API_KEY}&details=true&metric=${metric}`,
   )
   const results = await data.json()
-  console.log(results)
   if (!results) {
     return null
   }
@@ -43,6 +42,7 @@ const getNext5DaysWeather = async (key: string, tempUnit: string) => {
     `http://dataservice.accuweather.com/forecasts/v1/daily/5day/${key}?apikey=${API_KEY}&details=false&metric=${metric}`,
   )
   const results = await data.json()
+  console.log(results)
   if (!results) {
     return null
   }
@@ -50,11 +50,14 @@ const getNext5DaysWeather = async (key: string, tempUnit: string) => {
 }
 
 const getNext12HrsWeather = async (key: string, tempUnit: string) => {
+  console.log('API_KEY is: ', API_KEY)
+
   const metric = tempUnit === 'C'
   const data = await fetch(
     `http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/${key}?apikey=${API_KEY}&details=true&metric=${metric}`,
   )
   const results = await data.json()
+  console.log(results)
   if (!results) {
     return null
   }

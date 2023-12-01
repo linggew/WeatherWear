@@ -6,22 +6,32 @@ import {
   Icon,
   useTheme,
   Dialog,
-  FAB,
+  Slider,
+  FAB
 } from '@rneui/themed'
+import moment from 'moment'
 import React, { useState, useEffect } from 'react'
 import { FlatList, View } from 'react-native'
 
 import { ClothingRec } from '../components/ClothingRec'
+import TempChart from '../components/TempChart'
 import useAsyncStorage from '../hooks/useAsyncStorage'
 import {
   getCurrentWeather,
   getNext12HrsWeather,
   healthAlertsExist,
 } from '../utils/weather'
-import moment from 'moment'
 
 type HomeProps = {
   navigation: NavigationProp<any>
+}
+
+type ItemProps = { time: string; temp: string }
+
+export type WeatherType = {
+  id: number
+  time: any
+  temp: number
 }
 
 export const Home = ({ navigation }: HomeProps) => {
@@ -29,27 +39,39 @@ export const Home = ({ navigation }: HomeProps) => {
   const { theme } = useTheme()
   const { settings, loading } = useAsyncStorage()
 
-  const [currWeather, setCurrWeather] = useState(null)
-  const [nextWeather, setNextWeather] = useState([])
+  const [currWeather, setCurrWeather] = useState(0)
+  const [nextWeather, setNextWeather] = useState<WeatherType[]>([])
   const [alertsExist, setAlertsExist] = useState(false)
+  const [currTime, setCurrTime] = useState(0)
 
-  const getWeatherNum = () => {
-    if (currWeather) {
-      return currWeather['Temperature'][
-        settings!.temperatureUnit === 'C' ? 'Metric' : 'Imperial'
-      ]['Value']
-    }
-  }
+  // const getWeatherNum = () => {
+  //   if (currWeather) {
+  //     return currWeather['Temperature'][
+  //       settings!.temperatureUnit === 'C' ? 'Metric' : 'Imperial'
+  //     ]['Value']
+  //   }
+  // }
 
   useEffect(() => {
     if (settings) {
-      getCurrentWeather(settings!.locationKey, settings!.temperatureUnit).then(
-        (data) => setCurrWeather(data),
-      )
+      // getCurrentWeather(settings!.locationKey, settings!.temperatureUnit).then(
+      //   (data) => setCurrWeather(data),
+      // )
       getNext12HrsWeather(
         settings!.locationKey,
         settings!.temperatureUnit,
-      ).then((data) => setNextWeather(data))
+      ).then((data) => {
+        const nextWeatherData = []
+        for (let i = 0; i < data.length; i++) {
+          nextWeatherData.push({
+            id: i,
+            time: moment(data[i]['DateTime']).format('h A'),
+            temp: Number(data[i]['Temperature']['Value']),
+          })
+        }
+        setCurrWeather(nextWeatherData[0].temp)
+        setNextWeather(nextWeatherData)
+      })
 
       healthAlertsExist(
         settings!.locationKey,
@@ -60,6 +82,12 @@ export const Home = ({ navigation }: HomeProps) => {
     }
   }, [settings])
 
+  useEffect(() => {
+    if (nextWeather.length > 0) {
+      setCurrWeather(nextWeather[currTime].temp)
+    }
+  }, [currTime])
+
   if (loading) {
     return (
       <View style={styles.wrapper}>
@@ -67,17 +95,6 @@ export const Home = ({ navigation }: HomeProps) => {
       </View>
     )
   }
-
-  let data = []
-  for (let i = 0; i < nextWeather.length; i++) {
-    data.push({
-      id: i,
-      time: moment(nextWeather[i]['DateTime']).format('h A'),
-      temp: nextWeather[i]['Temperature']['Value'] + '°',
-    })
-  }
-
-  type ItemProps = { time: string; temp: string }
 
   const Item = ({ time, temp }: ItemProps) => (
     <View style={styles.item}>
@@ -107,31 +124,56 @@ export const Home = ({ navigation }: HomeProps) => {
         <Text
           style={{
             fontWeight: '600',
-            marginBottom: theme.spacing.lg,
+            marginBottom: theme.spacing.sm,
             fontSize: 50,
           }}
         >
           {!currWeather || !settings
             ? 'Loading...'
-            : `${getWeatherNum()}${
-                settings.temperatureUnit === 'C' ? '°C' : '°F'
-              }`}
+            : `${currWeather}${settings.temperatureUnit === 'C' ? '°C' : '°F'}`}
         </Text>
         <View style={styles.visualizationContainer}>
-          <FlatList
-            data={data}
-            horizontal={true}
+          {/* <FlatList
+            data={nextWeather}
+            horizontal
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <Item time={item.time} temp={item.temp} />
+              <Item time={item.time} temp={String(item.temp)} />
             )}
-            // keyExtractor={item => item.id}
-          />
+            keyExtractor={(item) => item.id}
+          /> */}
+          <TempChart data={nextWeather} />
+        </View>
+        <View style={styles.sliderContainer}>
+          {nextWeather.length > 0 && (
+            <>
+              <View style={styles.sliderWithTextContainer}>
+                <Text>{nextWeather[0].time}</Text>
+                <Text>{nextWeather[11].time}</Text>
+              </View>
+              <Slider
+                value={currTime}
+                onValueChange={setCurrTime}
+                minimumValue={0}
+                maximumValue={11}
+                step={1}
+                allowTouchTrack
+                minimumTrackTintColor={theme.colors.grey4}
+                maximumTrackTintColor={theme.colors.grey4}
+                trackStyle={{ height: 5 }}
+                thumbStyle={{
+                  height: 20,
+                  width: 20,
+                  backgroundColor: theme.colors.primary,
+                }}
+              />
+            </>
+          )}
         </View>
         <View style={styles.avatarContainer}>
-          {currWeather && (
+          {currWeather && settings && (
             <ClothingRec
-              currTemp={getWeatherNum()!}
+              currTemp={currWeather}
               metric={settings!.temperature === 'C'}
             />
           )}
@@ -211,11 +253,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 20,
     textAlign: 'center',
     marginVertical: theme.spacing.lg,
-    padding: theme.spacing.md,
-    width: '80%',
-    height: '25%',
-    backgroundColor: theme.colors.grey5,
-    flexDirection: 'column',
+    // padding: theme.spacing.md,
+    width: '100%',
+    height: '20%',
+    // backgroundColor: theme.colors.white,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -226,10 +268,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing.md,
     width: '80%',
     flex: 1,
-    backgroundColor: theme.colors.grey5,
+    // backgroundColor: theme.colors.grey5,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sliderContainer: {
+    width: '70%',
+    marginHorizontal: theme.spacing.xl,
+  },
+  sliderWithTextContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   item: {
     marginVertical: 8,

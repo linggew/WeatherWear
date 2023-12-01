@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native'
-import { Card, Text } from '@rneui/themed'
+import { Dialog } from '@rneui/themed'
 import { useEffect, useState, useCallback } from 'react'
-import { ImageURISource, View } from 'react-native'
+import { ImageURISource, View, Text } from 'react-native'
 import SvgUri from 'react-native-svg-uri'
 
 import { getClothPreferenceData } from '../utils/storage'
@@ -25,56 +25,58 @@ export const ClothingRec = ({ currTemp, metric }: ClothingRecProps) => {
   const [rec, setRec] = useState<ImageURISource[]>([])
 
   const recommendClothing = () => {
-    const {
-      Coat,
-      Jacket,
-      LongPants,
-      LongSleeve,
-      Shorts,
-      ShortsLeeve,
-      Sleeveless,
-      WarmPants,
-    } = metric === true ? preference!['C'] : preference!['F']
+    if (preference) {
+      const {
+        Coat,
+        Jacket,
+        LongPants,
+        LongSleeve,
+        Shorts,
+        ShortsLeeve,
+        Sleeveless,
+        WarmPants,
+      } = metric === true ? preference!['C'] : preference!['F']
 
-    const upper: Record<string, number> = {
-      Coat,
-      Jacket,
-      'Long Sleeve': LongSleeve,
-      'Short Sleeve': ShortsLeeve,
-      Sleeveless,
-    }
-
-    const lower: Record<string, number> = {
-      'Warm Pants': WarmPants,
-      'Long Pants': LongPants,
-      Shorts,
-    }
-
-    const svgSource: Record<string, ImageURISource> = {
-      Coat: coat,
-      Jacket: jacket,
-      'Long Sleeve': longSleeve,
-      'Short Sleeve': shortSleeve,
-      Sleeveless: sleeveless,
-      'Warm Pants': warmPants,
-      'Long Pants': longPants,
-      Shorts: shorts,
-    }
-
-    const currRec = []
-    for (const [key, value] of Object.entries(upper)) {
-      if (currTemp <= value) {
-        currRec.push(svgSource[key])
-        break
+      const upper: Record<string, number> = {
+        Coat,
+        Jacket,
+        'Long Sleeve': LongSleeve,
+        'Short Sleeve': ShortsLeeve,
+        Sleeveless,
       }
-    }
-    for (const [key, value] of Object.entries(lower)) {
-      if (currTemp <= value) {
-        currRec.push(svgSource[key])
-        break
+
+      const lower: Record<string, number> = {
+        'Warm Pants': WarmPants,
+        'Long Pants': LongPants,
+        Shorts,
       }
+
+      const svgSource: Record<string, ImageURISource> = {
+        Coat: coat,
+        Jacket: jacket,
+        'Long Sleeve': longSleeve,
+        'Short Sleeve': shortSleeve,
+        Sleeveless: sleeveless,
+        'Warm Pants': warmPants,
+        'Long Pants': longPants,
+        Shorts: shorts,
+      }
+
+      const currRec = []
+      for (const [key, value] of Object.entries(upper)) {
+        if (currTemp <= value) {
+          currRec.push(svgSource[key])
+          break
+        }
+      }
+      for (const [key, value] of Object.entries(lower)) {
+        if (currTemp <= value) {
+          currRec.push(svgSource[key])
+          break
+        }
+      }
+      setRec(currRec)
     }
-    setRec(currRec)
   }
 
   useEffect(() => {
@@ -87,7 +89,7 @@ export const ClothingRec = ({ currTemp, metric }: ClothingRecProps) => {
     if (preference) {
       recommendClothing()
     }
-  }, [preference])
+  }, [preference, currTemp, metric])
 
   useFocusEffect(
     useCallback(() => {
@@ -97,10 +99,18 @@ export const ClothingRec = ({ currTemp, metric }: ClothingRecProps) => {
     }, []),
   )
 
+  if (rec.length === 0 || preference === null) {
+    return (
+      <View>
+        <Dialog.Loading />
+      </View>
+    )
+  }
+
   return (
     <View>
-      {rec.map((item) => (
-        <SvgUri width={100} height={100} source={item} />
+      {rec.map((item, index) => (
+        <SvgUri key={index} width={130} height={130} source={item} />
       ))}
     </View>
   )
